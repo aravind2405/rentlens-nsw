@@ -1,12 +1,15 @@
-# RentLens NSW
+Welcome to your new dbt project!
 
-> What does a new rental tenancy cost in NSW, by postcode — and how is that changing?
+### Using the starter project
 
-A tested, documented dbt pipeline over NSW Fair Trading rental bond data.
+Try running the following commands:
+- dbt run
+- dbt test
 
-*Work in progress — README updated at each version.*
 
----
-
-## Status
-🚧 v0.1 in progress
+### Resources:
+- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
+- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
+- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
+- Find [dbt events](https://events.getdbt.com) near you
+- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices

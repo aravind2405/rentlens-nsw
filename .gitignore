@@ -22,4 +22,6 @@ data/
 
 # IDE
 .vscode/
-.idea/
+.idea/target/
+data/raw/
+data/landing/
