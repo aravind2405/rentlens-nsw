@@ -1,0 +1,25 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+
+# dbt
+target/
+logs/
+dbt_packages/
+
+# Database
+*.duckdb
+*.duckdb.wal
+
+# Raw data — too large and re-downloadable
+data/
+
+# Mac system files
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
