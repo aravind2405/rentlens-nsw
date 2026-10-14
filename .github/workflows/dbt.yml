@@ -22,13 +22,14 @@ jobs:
         run: pip install dbt-duckdb pandas requests
 
       - name: Download raw data
-run: |
+        run: |
           if ls data/raw/lodgements/*.parquet 1>/dev/null 2>&1; then
             echo "Parquet files already present, skipping download."
           else
             python ingest/load_lodgements.py
           fi
           ls data/raw/lodgements/
+
       - name: Run dbt build
         run: dbt build --profiles-dir .
         env:
