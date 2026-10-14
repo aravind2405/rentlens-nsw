@@ -25,6 +25,6 @@ jobs:
         run: python ingest/load_lodgements.py
 
       - name: Run dbt build
-        run: dbt build build --profiles-dir
+        run: dbt build --profiles-dir .
         env:
           RENTLENS_DATA_PATH: ${{ github.workspace }}/data/raw/lodgements
