@@ -22,11 +22,7 @@ jobs:
         run: pip install dbt-duckdb pandas requests
 
       - name: Download raw data
-        run:  python ingest/load_lodgements.py
-          echo "--- files in data/raw/lodgements ---"
-          ls -lh data/raw/lodgements/ || echo "directory missing or empty"
-
-Save: Ctrl+O → Enter → Ctrl+X
+        run: python ingest/load_lodgements.py && ls data/raw/lodgements/
 
       - name: Run dbt build
         run: dbt build --profiles-dir .
