@@ -1,1 +1,582 @@
-pbpaste > dashboard/index.html
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RentLens NSW</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #F7F8FA;
+    --surface: #ffffff;
+    --border: #E5E7EB;
+    --border-heavy: #111827;
+    --text: #111827;
+    --text-secondary: #374151;
+    --muted: #6B7280;
+    --muted-light: #9CA3AF;
+    --accent: #2563EB;
+    --accent-light: #EFF6FF;
+    --accent-mid: #BFDBFE;
+    --green: #16A34A;
+    --green-light: #DCFCE7;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border-heavy);
+    padding: 16px 32px 14px;
+  }
+  .header-inner {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .header-eyebrow {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .header-title-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-mark {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { display: block; }
+  header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .header-meta {
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .header-meta .brand {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .header-meta .date {
+    font-size: 9px;
+    color: var(--muted-light);
+    margin-top: 3px;
+  }
+
+  /* ── KPI strip ── */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    overflow: hidden;
+    margin: 20px 32px 0;
+  }
+  .kpi {
+    padding: 16px 20px;
+    border-right: 1px solid var(--border);
+  }
+  .kpi:last-child { border-right: none; }
+  .kpi.highlight {
+    background: var(--accent-light);
+    border-right: none;
+  }
+  .kpi-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 5px;
+  }
+  .kpi.highlight .kpi-label { color: #1D4ED8; }
+  .kpi-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+  .kpi.highlight .kpi-value { font-size: 1.15rem; color: #1E40AF; line-height: 1.25; }
+  .kpi-sub {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .kpi-sub.up { color: var(--green); }
+  .kpi.highlight .kpi-sub { color: #3B82F6; margin-top: 4px; }
+
+  /* ── Content grid ── */
+  .content {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 16px;
+    padding: 16px 32px 0;
+  }
+  .content-full {
+    padding: 16px 32px 0;
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+  }
+  .card-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .card-source {
+    font-size: 9px;
+    color: var(--muted-light);
+  }
+
+  /* ── Filter pills ── */
+  .pill-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .pill {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 10px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.12s;
+    font-family: inherit;
+  }
+  .pill:hover { border-color: var(--accent); color: var(--accent); }
+  .pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ── Legend ── */
+  .legend {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .legend-swatch {
+    width: 20px;
+    height: 2.5px;
+    border-radius: 2px;
+  }
+
+  /* ── Chart wrappers ── */
+  .chart-wrap { position: relative; height: 230px; }
+  .chart-wrap-sm { position: relative; height: 200px; }
+
+  /* ── Ranked table ── */
+  .rank-table { width: 100%; }
+  .rank-table-head {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 8px;
+    padding-bottom: 7px;
+    border-bottom: 2px solid var(--border-heavy);
+    margin-bottom: 2px;
+  }
+  .rank-table-head span {
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+  .rank-row {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid #F9FAFB;
+    align-items: baseline;
+  }
+  .rank-row:last-child { border-bottom: none; }
+  .rank-num { font-size: 10px; color: var(--muted-light); }
+  .rank-name { font-size: 10px; color: var(--text-secondary); }
+  .rank-val { font-size: 10px; font-weight: 700; color: var(--text); text-align: right; }
+  .rank-val.top { color: var(--accent); }
+
+  /* ── Volume chart section ── */
+  .volume-section {
+    padding: 16px 32px 24px;
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 16px 32px;
+    color: var(--muted-light);
+    font-size: 9px;
+    border-top: 1px solid var(--border);
+    letter-spacing: 0.3px;
+    background: var(--surface);
+    margin-top: 8px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 720px) {
+    header, .kpi-strip { margin-left: 16px; margin-right: 16px; }
+    .kpi-strip { margin: 16px 16px 0; grid-template-columns: 1fr 1fr; }
+    .kpi { border-right: none; border-bottom: 1px solid var(--border); }
+    .kpi:nth-child(2) { border-right: none; }
+    .content { grid-template-columns: 1fr; padding: 12px 16px 0; }
+    .content-full, .volume-section { padding-left: 16px; padding-right: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="header-eyebrow">NSW Rental Market · Sep 2025 – Aug 2026</div>
+      <div class="header-title-row">
+        <div class="logo-mark">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M2 11L7 3l5 8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1>Rents continue to climb across NSW</h1>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="brand">RentLens</div>
+      <div class="date">October 2026</div>
+    </div>
+  </div>
+</header>
+
+<!-- KPI strip -->
+<div class="kpi-strip">
+  <div class="kpi">
+    <div class="kpi-label">Median unit rent</div>
+    <div class="kpi-value">$620</div>
+    <div class="kpi-sub up">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+        <path d="M5 8V2M2 5l3-3 3 3" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      +6.9% year-on-year
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Median house rent</div>
+    <div class="kpi-value">$710</div>
+    <div class="kpi-sub up">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+        <path d="M5 8V2M2 5l3-3 3 3" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      +2.9% year-on-year
+    </div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Bonds lodged (Aug 2026)</div>
+    <div class="kpi-value">27,309</div>
+    <div class="kpi-sub">Peak: 29,254 in Feb 2026</div>
+  </div>
+  <div class="kpi highlight">
+    <div class="kpi-label">Priciest unit suburb</div>
+    <div class="kpi-value">Maroubra</div>
+    <div class="kpi-sub">2034 · $2,360 / week median</div>
+  </div>
+</div>
+
+<!-- Main content: chart + table -->
+<div class="content">
+
+  <!-- Rent trend chart -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Median weekly rent by dwelling type</div>
+      <div class="card-source">NSW Fair Trading bond data</div>
+    </div>
+    <div class="pill-row" id="typeFilters">
+      <button class="pill active" data-type="all">All types</button>
+      <button class="pill" data-type="F">Flat / Apartment</button>
+      <button class="pill" data-type="H">House</button>
+      <button class="pill" data-type="U">Unit</button>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="rentChart"></canvas>
+    </div>
+    <div class="legend" id="rentLegend">
+      <div class="legend-item"><div class="legend-swatch" style="background:#2563EB"></div>Flat / Apartment</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#16A34A"></div>House</div>
+      <div class="legend-item"><div class="legend-swatch" style="background:#F59E0B"></div>Unit</div>
+    </div>
+  </div>
+
+  <!-- Ranked table -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Most expensive unit postcodes</div>
+      <div class="card-source">Units · min. 10 bonds</div>
+    </div>
+    <div class="rank-table">
+      <div class="rank-table-head">
+        <span>#</span><span>Suburb (postcode)</span><span>Med/wk</span>
+      </div>
+      <div class="rank-row"><span class="rank-num">1</span><span class="rank-name">Maroubra (2034)</span><span class="rank-val top">$2,360</span></div>
+      <div class="rank-row"><span class="rank-num">2</span><span class="rank-name">Edgecliff (2026)</span><span class="rank-val">$1,800</span></div>
+      <div class="rank-row"><span class="rank-num">3</span><span class="rank-name">Pyrmont (2009)</span><span class="rank-val">$1,125</span></div>
+      <div class="rank-row"><span class="rank-num">4</span><span class="rank-name">St Leonards (2065)</span><span class="rank-val">$925</span></div>
+      <div class="rank-row"><span class="rank-num">5</span><span class="rank-name">Chippendale (2008)</span><span class="rank-val">$865</span></div>
+      <div class="rank-row"><span class="rank-num">6</span><span class="rank-name">Newington (2127)</span><span class="rank-val">$860</span></div>
+      <div class="rank-row"><span class="rank-num">7</span><span class="rank-name">Glebe (2037)</span><span class="rank-val">$839</span></div>
+      <div class="rank-row"><span class="rank-num">8</span><span class="rank-name">Waterloo (2017)</span><span class="rank-val">$832</span></div>
+      <div class="rank-row"><span class="rank-num">9</span><span class="rank-name">Mascot (2190)</span><span class="rank-val">$825</span></div>
+      <div class="rank-row"><span class="rank-num">10</span><span class="rank-name">Marsden Park (2765)</span><span class="rank-val">$820</span></div>
+      <div class="rank-row"><span class="rank-num">11</span><span class="rank-name">Concord W. (2138)</span><span class="rank-val">$815</span></div>
+      <div class="rank-row"><span class="rank-num">12</span><span class="rank-name">Coogee (2031)</span><span class="rank-val">$800</span></div>
+      <div class="rank-row"><span class="rank-num">13</span><span class="rank-name">Concord (2137)</span><span class="rank-val">$800</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Volume chart -->
+<div class="volume-section">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Monthly bond lodgements — total new rentals</div>
+      <div class="card-source">All dwelling types · NSW Fair Trading</div>
+    </div>
+    <div class="chart-wrap-sm">
+      <canvas id="volumeChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Data source: NSW Fair Trading Rental Bond Board · Bond lodgement data · Sep 2025 – Aug 2026 · RentLens NSW
+</footer>
+
+<script>
+// ── Data ──────────────────────────────────────────────────────────────────
+const MONTHS = ['Sep 25','Oct 25','Nov 25','Dec 25','Jan 26','Feb 26','Mar 26','Apr 26','May 26','Jun 26','Jul 26','Aug 26'];
+
+const RENT_DATA = {
+  F: [715, 710, 700, 730, 750, 760, 730, 720, 735, 750, 750, 750],
+  H: [690, 682.5, 700, 695, 700, 700, 700, 700, 700, 700, 700, 710],
+  U: [580, 550, 620, 640, 600, 650, 629, 550, 600, 620, 650, 620],
+};
+
+const VOLUME_DATA = [27042, 25328, 23196, 24460, 27638, 29254, 27810, 22193, 24174, 25285, 27852, 27309];
+
+// ── Shared chart defaults ─────────────────────────────────────────────────
+Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#9CA3AF';
+
+const gridOpts = {
+  color: '#F3F4F6',
+  drawBorder: false,
+};
+const tickOpts = { color: '#9CA3AF', maxRotation: 0 };
+
+// ── Rent trend chart ──────────────────────────────────────────────────────
+const rentCtx = document.getElementById('rentChart').getContext('2d');
+const rentChart = new Chart(rentCtx, {
+  type: 'line',
+  data: {
+    labels: MONTHS,
+    datasets: [
+      {
+        label: 'Flat / Apartment',
+        data: RENT_DATA.F,
+        borderColor: '#2563EB',
+        backgroundColor: 'rgba(37,99,235,0.06)',
+        borderWidth: 2.5,
+        pointRadius: 3,
+        pointBackgroundColor: '#2563EB',
+        pointHoverRadius: 5,
+        tension: 0.35,
+        fill: false,
+      },
+      {
+        label: 'House',
+        data: RENT_DATA.H,
+        borderColor: '#16A34A',
+        backgroundColor: 'rgba(22,163,74,0.05)',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: '#16A34A',
+        pointHoverRadius: 5,
+        tension: 0.35,
+        fill: false,
+      },
+      {
+        label: 'Unit',
+        data: RENT_DATA.U,
+        borderColor: '#F59E0B',
+        backgroundColor: 'rgba(245,158,11,0.05)',
+        borderWidth: 2,
+        pointRadius: 3,
+        pointBackgroundColor: '#F59E0B',
+        pointHoverRadius: 5,
+        tension: 0.35,
+        fill: false,
+      },
+    ],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#fff',
+        borderColor: '#E5E7EB',
+        borderWidth: 1,
+        titleColor: '#111827',
+        bodyColor: '#374151',
+        padding: 10,
+        callbacks: {
+          label: ctx => ` ${ctx.dataset.label}: $${ctx.parsed.y}/wk`,
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: gridOpts,
+        ticks: tickOpts,
+        border: { color: '#E5E7EB' },
+      },
+      y: {
+        grid: gridOpts,
+        ticks: {
+          ...tickOpts,
+          callback: v => '$' + v,
+        },
+        border: { color: '#E5E7EB' },
+      },
+    },
+  },
+});
+
+// ── Filter pills ──────────────────────────────────────────────────────────
+const DATASET_MAP = { F: 0, H: 1, U: 2 };
+document.getElementById('typeFilters').addEventListener('click', e => {
+  const btn = e.target.closest('.pill');
+  if (!btn) return;
+  const type = btn.dataset.type;
+  document.querySelectorAll('#typeFilters .pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+
+  rentChart.data.datasets.forEach((ds, i) => {
+    if (type === 'all') {
+      ds.hidden = false;
+    } else {
+      ds.hidden = (i !== DATASET_MAP[type]);
+    }
+  });
+  rentChart.update();
+});
+
+// ── Volume chart ──────────────────────────────────────────────────────────
+const volCtx = document.getElementById('volumeChart').getContext('2d');
+new Chart(volCtx, {
+  type: 'bar',
+  data: {
+    labels: MONTHS,
+    datasets: [{
+      label: 'Total bond lodgements',
+      data: VOLUME_DATA,
+      backgroundColor: VOLUME_DATA.map((v, i) =>
+        v === Math.max(...VOLUME_DATA) ? '#2563EB' : '#BFDBFE'
+      ),
+      borderRadius: 4,
+      borderSkipped: false,
+    }],
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#fff',
+        borderColor: '#E5E7EB',
+        borderWidth: 1,
+        titleColor: '#111827',
+        bodyColor: '#374151',
+        padding: 10,
+        callbacks: {
+          label: ctx => ` ${ctx.parsed.y.toLocaleString()} bonds`,
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: tickOpts,
+        border: { color: '#E5E7EB' },
+      },
+      y: {
+        grid: gridOpts,
+        ticks: {
+          ...tickOpts,
+          callback: v => v.toLocaleString(),
+        },
+        border: { color: '#E5E7EB' },
+      },
+    },
+  },
+});
+</script>
+</body>
+</html>
