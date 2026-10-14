@@ -1,7 +1,7 @@
 with source as (
 
     select * from read_parquet(
-        '/Users/aravind/Desktop/rentlens-nsw/data/raw/lodgements/lodgements_*.parquet'
+        '{{ var("raw_lodgements_path") }}/lodgements_*.parquet'
     )
 
 ),
