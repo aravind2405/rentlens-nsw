@@ -25,3 +25,4 @@ data/
 .idea/target/
 data/raw/
 data/landing/
+!data/raw/lodgements/*.parquet
