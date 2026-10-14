@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: int_lodgements_flagged
+    description: >
+      Staging data with quality flags added. Rows are not filtered —
+      all 314k lodgements are present. Use rent_flag, bedrooms_flag,
+      and postcode_flag to exclude bad rows in downstream models.
+
+    columns:
+      - name: rent_flag
+        description: >
+          NULL if rent is clean. Values: null_rent, zero_rent, very_low_rent.
+
+      - name: bedrooms_flag
+        description: >
+          NULL if bedrooms is known. Values: unknown_bedrooms.
+
+      - name: postcode_flag
+        description: >
+          NULL if postcode is valid NSW (2000-2999). Values: invalid_postcode.
