@@ -1,0 +1,40 @@
+version: 2
+
+models:
+  - name: rents_by_postcode
+    description: >
+      Median and average weekly rent by postcode and dwelling type.
+      Excludes rows with rent_flag or postcode_flag set.
+
+    columns:
+      - name: postcode
+        tests:
+          - not_null
+      - name: dwelling_type
+        tests:
+          - not_null
+      - name: lodgement_count
+        tests:
+          - not_null
+      - name: median_weekly_rent
+        tests:
+          - not_null
+
+  - name: rents_by_month
+    description: >
+      Median and average weekly rent by month and dwelling type.
+      Excludes rows with rent_flag or postcode_flag set.
+
+    columns:
+      - name: file_month
+        tests:
+          - not_null
+      - name: dwelling_type
+        tests:
+          - not_null
+      - name: lodgement_count
+        tests:
+          - not_null
+      - name: median_weekly_rent
+        tests:
+          - not_null
