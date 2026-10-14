@@ -19,7 +19,7 @@ jobs:
           python-version: "3.11"
 
       - name: Install dependencies
-        run: pip install dbt-duckdb
+        run: pip install dbt-duckdb pandas requests
 
       - name: Download raw data
         run: python ingest/load_lodgements.py
