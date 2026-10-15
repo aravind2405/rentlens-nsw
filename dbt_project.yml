@@ -23,4 +23,4 @@ models:
     marts:
       +materialized: table
 vars:
-  raw_lodgements_path: "{{ env_var('RENTLENS_DATA_PATH') }}"
+  raw_lodgements_path: "{{ env_var('RENTLENS_DATA_PATH', 'data/raw/lodgements') }}"
