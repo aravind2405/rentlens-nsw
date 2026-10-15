@@ -8,6 +8,8 @@ Raw layer rules:
 - Every value lands as text — no casting, no type conversion
 - Nothing is deleted or filtered
 - Re-runs are idempotent — same input produces same output
+
+Sources: 2021–2026, monthly + annual files from nsw.gov.au
 """
 
 import hashlib
@@ -29,7 +31,7 @@ COLUMN_MAP = {
     "postcode":        "postcode",
     "post code":       "postcode",
     "dwelling":        "dwelling_type",
-    "dwelling type":   "dwelling_type", 
+    "dwelling type":   "dwelling_type",
     "type":            "dwelling_type",
     "bedroom":         "bedrooms",
     "bedrooms":        "bedrooms",
@@ -45,7 +47,6 @@ REQUIRED_COLUMNS = {"postcode", "dwelling_type", "bedrooms",
 
 
 def sha256(path: Path) -> str:
-    """Return the SHA-256 hash of a file."""
     h = hashlib.sha256()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(8192), b""):
@@ -66,10 +67,6 @@ def find_header_row(path: Path) -> int:
 
 
 def map_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Rename columns using COLUMN_MAP.
-    Raises a clear error if a required column is missing after mapping.
-    """
     rename = {}
     for col in df.columns:
         key = col.lower().strip()
@@ -88,10 +85,6 @@ def map_columns(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def normalise(file_month: str, path: Path, source_file: str) -> pd.DataFrame:
-    """
-    Read one Excel file and return a clean DataFrame.
-    All values are cast to string — no type conversion at this layer.
-    """
     header_row = find_header_row(path)
     df = pd.read_excel(path, header=header_row, dtype=str)
 
@@ -107,17 +100,20 @@ def normalise(file_month: str, path: Path, source_file: str) -> pd.DataFrame:
 
 
 def process(file_month: str, url: str) -> None:
-    """Download, normalise and land one month's file."""
-
     landing_path = LANDING_DIR / f"lodgements_{file_month}.xlsx"
     raw_path     = RAW_DIR    / f"lodgements_{file_month}.parquet"
 
-    # ── Download ──────────────────────────────────────────────────────────────
+    # Skip if parquet already exists (idempotent)
+    if raw_path.exists():
+        print(f"[{file_month}] Already processed, skipping.")
+        return
+
+    # Download
     if landing_path.exists():
         file_hash = sha256(landing_path)
-        print(f"\n[{file_month}] Using cached file  hash={file_hash[:8]}...")
+        print(f"[{file_month}] Using cached xlsx  hash={file_hash[:8]}...")
     else:
-        print(f"\n[{file_month}] Downloading...")
+        print(f"[{file_month}] Downloading {url}")
         headers = {
             "User-Agent": (
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -131,22 +127,17 @@ def process(file_month: str, url: str) -> None:
             "Referer": "https://www.nsw.gov.au/housing-and-construction/"
                        "rental-forms-surveys-and-data/rental-bond-data",
         }
-        response = requests.get(url, headers=headers, timeout=60)
+        response = requests.get(url, headers=headers, timeout=120)
         response.raise_for_status()
         landing_path.write_bytes(response.content)
         file_hash = sha256(landing_path)
         print(f"[{file_month}] Downloaded {len(response.content):,} bytes  hash={file_hash[:8]}...")
 
-    # ── Normalise ─────────────────────────────────────────────────────────────
+    # Parse + write parquet
     print(f"[{file_month}] Parsing...")
     df = normalise(file_month, landing_path, landing_path.name)
-
-    rows_in  = len(df)
-    rows_out = len(df)
-
-    # ── Write Parquet ─────────────────────────────────────────────────────────
     df.to_parquet(raw_path, index=False)
-    print(f"[{file_month}] ✓  rows in={rows_in:,}  rows out={rows_out:,}  → {raw_path.name}")
+    print(f"[{file_month}] ✓  {len(df):,} rows → {raw_path.name}")
 
 
 def main() -> None:
@@ -157,7 +148,8 @@ def main() -> None:
         reader = csv.DictReader(f)
         sources = list(reader)
 
-    print(f"Found {len(sources)} files to process.")
+    print(f"Found {len(sources)} source files to process.")
+    print(f"Covering 2021–2026 NSW Fair Trading bond lodgements.\n")
 
     errors = []
     for row in sources:
