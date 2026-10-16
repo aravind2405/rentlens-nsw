@@ -4,7 +4,7 @@ models:
   - name: int_lodgements_flagged
     description: >
       Staging data with quality flags added. Rows are not filtered —
-      all 314k lodgements are present. Use rent_flag, bedrooms_flag,
+      every staged lodgement is present. Use rent_flag, bedrooms_flag,
       and postcode_flag to exclude bad rows in downstream models.
 
     columns:

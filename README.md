@@ -2,7 +2,7 @@
 
 **Actual signed rents across NSW — not asking prices.**
 
-Domain and REA show what landlords are asking. NSW Fair Trading records what tenants actually signed. This project ingests 57 months of official bond lodgement data (Jan 2022 – Sep 2026, 1.8M+ records), runs it through a dbt pipeline on DuckDB, and surfaces median weekly rents by dwelling type, postcode, and month.
+Domain and REA show what landlords are asking. NSW Fair Trading records what tenants actually signed. This project ingests 57 months of official bond lodgement data (Jan 2022 – Sep 2026, 1.55M records), runs it through a dbt pipeline on DuckDB, and surfaces median weekly rents by dwelling type, postcode, and month.
 
 **[→ Live dashboard](https://aravind2405.github.io/rentlens-nsw/)**
 
@@ -10,17 +10,17 @@ Domain and REA show what landlords are asking. NSW Fair Trading records what ten
 
 ## The gap this closes
 
-When a renter searches on Domain, they see advertised rents — prices set before negotiation, before vacancy pressure, before the actual lease is signed. Bond lodgements capture the rent on the signed lease, submitted within 10 days of move-in. That makes them the most accurate measure of what the market is actually clearing at.
+When a renter searches on Domain, they see advertised rents — prices set before negotiation, before vacancy pressure, before the actual lease is signed. Bond lodgements capture the rent on the signed lease. Landlords must lodge the bond within 10 working days of receiving it, and agents within 10 working days after the end of that month, so a lodgement can trail the lease by up to about six weeks. That makes them the most accurate measure of what the market is actually clearing at.
 
 **Key findings — full dataset (Jan 2022 – Sep 2026):**
-- Total bonds lodged: **1.5M records** across 57 months
-- All-time median flat rent: **$680/wk** · All-time median house rent: **$650/wk**
-- Peak single month: **Feb 2025** (31,430 bonds lodged)
-- Priciest flat postcode (all-time): Sydney CBD (2000) at **$920/wk**
+- Total bonds lodged: **1,547,476 records** across 57 months
+- All-time median flat rent: **$650/wk** · All-time median house rent: **$650/wk**
+- Peak single month: **Feb 2025** (31,428 bonds lodged)
+- Priciest flat postcode (all-time, 30+ bonds): Sydney CBD (2000) at **$990/wk**
 
 **Last 12 months (Oct 2025 – Sep 2026):**
-- Median flat rent: **$750/wk** (+4.9% year-on-year)
-- Median house rent: **$710/wk** (+2.9% year-on-year)
+- Median flat rent in Sep 2026: **$750/wk** (+4.9% vs Sep 2025)
+- Median house rent in Sep 2026: **$710/wk** (+2.9% vs Sep 2025)
 - Peak month in window: Feb 2026 (29,252 bonds lodged)
 
 > Dashboard includes **1Y / 2Y / All** views — switch between the last 12 months, 2 years, or the full Jan 2022 – Sep 2026 history.
@@ -59,7 +59,7 @@ data/raw/lodgements/        ← one .parquet per month/year, no casting
 ┌─────────────────────────────────────────┐
 │  stg_bond_lodgements                    │  type-cast, rename columns
 │        ↓                                │
-│  int_lodgements_flagged                 │  flag outliers (rent < $50 or > $5000)
+│  int_lodgements_flagged                 │  flag bad rows (rent missing, zero or < $50)
 │        ↓                ↓               │
 │  rents_by_month    rents_by_postcode    │  mart: median rent aggregations
 └─────────────────────────────────────────┘
@@ -91,7 +91,7 @@ rentlens-nsw/
 │       ├── rents_by_month.sql
 │       └── rents_by_postcode.sql
 ├── data/
-│   └── raw/lodgements/      # .parquet files (git-ignored)
+│   └── raw/lodgements/      # .parquet files (12 sample months tracked for CI; full history local)
 ├── docs/
 │   └── index.html           # dashboard served by GitHub Pages (no build step)
 ├── .github/workflows/
@@ -130,8 +130,8 @@ NSW Fair Trading — Rental Bond Board
 
 Bond data is public under the [NSW Government open data licence](https://www.nsw.gov.au/nsw-government/policies-and-initiatives/data/open-data/open-data-licence). Each row is one bond lodgement: postcode, dwelling type, bedrooms, weekly rent, and lodgement date.
 
-**Coverage:** Jan 2022 – Sep 2026 (monthly files) + 2021–2025 annual files  
-**Records:** 1,842,751 rows after cleaning  
+**Coverage:** Jan 2022 – Sep 2026, monthly files only. Annual roll-up files are skipped because they repeat the monthly data.
+**Records:** 1,547,476 bond lodgements (monthly files; quality flags applied downstream)
 **Update cadence:** NSW Fair Trading publishes new monthly files ~6 weeks after month-end
 
 ---

@@ -11,7 +11,8 @@
 with late_in_source as (
     select count(*) as cnt
     from read_parquet('{{ var("raw_lodgements_path") }}/lodgements_*.parquet')
-    where cast(loaded_at as timestamp) - cast(lodgement_date as timestamp)
+    where file_month not like '%-annual'
+      and cast(loaded_at as timestamp) - cast(lodgement_date as timestamp)
           > interval '60 days'
 ),
 
