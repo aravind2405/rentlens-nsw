@@ -68,7 +68,7 @@ data/raw/lodgements/        ← one .parquet per month/year, no casting
 DuckDB (dev.duckdb)
         │
         ▼
-dashboard/index.html        ← Chart.js, no build step, deploys to GitHub Pages
+docs/index.html             ← Chart.js dashboard, no build step, served by GitHub Pages
 ```
 
 **Stack:** Python 3.13 · dbt-core · dbt-duckdb · DuckDB · Parquet · Chart.js 4.4.1 · GitHub Actions · GitHub Pages
@@ -92,8 +92,8 @@ rentlens-nsw/
 │       └── rents_by_postcode.sql
 ├── data/
 │   └── raw/lodgements/      # .parquet files (git-ignored)
-├── dashboard/
-│   └── index.html           # standalone dashboard (no build step)
+├── docs/
+│   └── index.html           # dashboard served by GitHub Pages (no build step)
 ├── .github/workflows/
 │   └── dbt.yml              # CI: dbt build on push
 ├── dbt_project.yml
@@ -118,7 +118,7 @@ python ingest/load_lodgements.py
 dbt build --profiles-dir .
 
 # Open the dashboard
-open dashboard/index.html
+open docs/index.html
 ```
 
 ---
