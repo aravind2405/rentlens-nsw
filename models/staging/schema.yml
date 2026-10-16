@@ -7,29 +7,60 @@ models:
       monthly Excel files, Jan 2022 – Sep 2026. All columns cast to their
       correct types; no rows filtered.
 
+      Incremental model watermarked on loaded_at (arrival time), not
+      lodgement_date (event time). This ensures late-arriving records —
+      bonds submitted to NSW Fair Trading after the period they belong to —
+      are captured on the next pipeline run rather than silently dropped.
+
     columns:
       - name: lodgement_date
-        description: Date the bond was lodged with NSW Fair Trading
+        description: >
+          Date the bond was lodged with NSW Fair Trading (event time).
+          Not used as the incremental watermark — see loaded_at.
         tests:
           - not_null
 
       - name: postcode
-        description: NSW postcode of the rental property
+        description: NSW postcode of the rental property.
         tests:
           - not_null
 
       - name: dwelling_type
-        description: Type of dwelling (F=Flat, H=House, etc.)
+        description: >
+          Type of dwelling. F=Flat/Unit, H=House, T=Townhouse, O=Other.
+          Codes sourced directly from NSW Fair Trading source files.
         tests:
           - not_null
 
       - name: bedrooms
-        description: Number of bedrooms. NULL where source value was non-numeric (e.g. U for unknown).
+        description: >
+          Number of bedrooms. NULL where source value was non-numeric
+          (e.g. 'U' for unknown in older source files).
 
       - name: weekly_rent
-        description: Weekly rent in AUD. NULL where source value was non-numeric.
+        description: >
+          Weekly rent in AUD as recorded on the bond lodgement form.
+          NULL where source value was non-numeric. Outliers (< $50 or
+          > $5,000/wk) are flagged downstream in int_lodgements_flagged
+          but not removed here.
 
       - name: file_month
-        description: Month the source file covers (YYYY-MM)
+        description: >
+          Month the source file covers, in YYYY-MM format (e.g. 2026-09).
+          Annual rollup files use YYYY-annual format and are excluded from
+          monthly trend analysis in the marts.
         tests:
           - not_null
+
+      - name: source_file
+        description: >
+          Filename of the source parquet file this record came from.
+          Used for lineage tracing and debugging duplicate records.
+
+      - name: loaded_at
+        description: >
+          Timestamp when this record was written to the parquet landing zone
+          by ingest/load_lodgements.py (arrival time). Used as the
+          incremental watermark so late-arriving records are never silently
+          dropped. Records where loaded_at is significantly later than
+          lodgement_date indicate delayed bond lodgement submissions.

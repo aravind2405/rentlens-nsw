@@ -1,8 +1,25 @@
+{{
+    config(
+        materialized='incremental',
+        unique_key=['file_month', 'postcode', 'dwelling_type', 'lodgement_date', 'weekly_rent'],
+        incremental_strategy='delete+insert'
+    )
+}}
+
 with source as (
 
     select * from read_parquet(
         '{{ var("raw_lodgements_path") }}/lodgements_*.parquet'
     )
+
+    {% if is_incremental() %}
+        -- Watermark on arrival time (loaded_at), not event time (lodgement_date).
+        -- This ensures late-arriving records are captured on the next run.
+        -- A watermark on lodgement_date would silently drop any record whose
+        -- lodgement_date falls before the last run's max, even if the file
+        -- was ingested after that run.
+        where loaded_at > (select max(loaded_at) from {{ this }})
+    {% endif %}
 
 ),
 
