@@ -12,13 +12,18 @@ Domain and REA show what landlords are asking. NSW Fair Trading records what ten
 
 When a renter searches on Domain, they see advertised rents — prices set before negotiation, before vacancy pressure, before the actual lease is signed. Bond lodgements capture the rent on the signed lease, submitted within 10 days of move-in. That makes them the most accurate measure of what the market is actually clearing at.
 
-**Key findings — last 12 months (Oct 2025 – Sep 2026):**
+**Key findings — full dataset (Jan 2022 – Sep 2026):**
+- Total bonds lodged: **1.5M records** across 57 months
+- All-time median flat rent: **$680/wk** · All-time median house rent: **$650/wk**
+- Peak single month: **Feb 2025** (31,430 bonds lodged)
+- Priciest flat postcode (all-time): Sydney CBD (2000) at **$920/wk**
+
+**Last 12 months (Oct 2025 – Sep 2026):**
 - Median flat rent: **$750/wk** (+4.9% year-on-year)
 - Median house rent: **$710/wk** (+2.9% year-on-year)
-- Priciest flat postcode: Sydney CBD (2000) at **$1,150/wk**
-- Peak rental activity: Feb 2026 (29,252 bonds lodged in a single month)
+- Peak month in window: Feb 2026 (29,252 bonds lodged)
 
-> Dashboard includes **1Y / 2Y / All** views. Full Jan 2022 – Sep 2026 history (1.8M records) available via the range switcher.
+> Dashboard includes **1Y / 2Y / All** views — switch between the last 12 months, 2 years, or the full Jan 2022 – Sep 2026 history.
 
 ---
 
