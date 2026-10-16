@@ -28,21 +28,21 @@ When a renter searches on Domain, they see advertised rents — prices set befor
 ---
 
 
-## Watermark postmortem
+## Watermark design decision
 
-**Bug:** `stg_bond_lodgements` was materialised as a `view`, reading all parquet files on every run. When converted to an incremental model, the first implementation used `lodgement_date` (event time) as the watermark — the date the bond was actually signed. This is the classic event-time trap: a bond lodged in January but submitted to NSW Fair Trading in March would have a `lodgement_date` of January. If the pipeline last ran in February, the March batch's January records fall before the watermark and are silently dropped forever.
+**Risk:** `stg_bond_lodgements` was a `view` that re-read every parquet file on each run, so no data was ever lost. Converting it to an incremental model meant choosing a watermark. The obvious choice, `lodgement_date` (event time), would silently drop late-arriving records: a bond signed in January but ingested in March falls below a watermark that has already passed January.
 
-**Fix:** Watermark on `loaded_at` (arrival time) — the timestamp written by `ingest/load_lodgements.py` when the record lands in the parquet zone. This captures every record in every new file, regardless of when the underlying bond was signed.
+**Decision:** Watermark on `loaded_at` (arrival time), written by `ingest/load_lodgements.py` when each file lands. A record counts as new if its file arrived after the last run, whatever date the lease was signed.
 
 ```sql
--- Wrong (event-time watermark — drops late records)
+-- Rejected: event-time watermark, drops late records
 where lodgement_date > (select max(lodgement_date) from {{ this }})
 
--- Correct (arrival-time watermark — captures everything new)
+-- Chosen: arrival-time watermark, captures everything new
 where loaded_at > (select max(loaded_at) from {{ this }})
 ```
 
-**Test:** `tests/test_late_arriving_record_lands.sql` counts records where `loaded_at` is more than 60 days after `lodgement_date` (genuinely late-arriving bonds) and asserts the count in the staging model equals the count in the raw source. If the watermark were on `lodgement_date`, this test would catch the drop.
+**Test:** `tests/test_late_arriving_record_lands.sql` checks that staging holds every record whose `loaded_at` is more than 60 days after its `lodgement_date`. On a full build it passes by design; it only proves the watermark on an incremental run with a second, later batch of files, which is still to be added.
 
 ## Architecture
 
