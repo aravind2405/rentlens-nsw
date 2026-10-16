@@ -27,8 +27,12 @@ models:
 
       - name: dwelling_type
         description: >
-          Type of dwelling. F=Flat/Unit, H=House, T=Townhouse, O=Other.
-          Codes sourced directly from NSW Fair Trading source files.
+          Type of rented premises as recorded by the agent or landlord.
+          F = Flat/unit, H = House, T = Terrace/townhouse/semi-detached,
+          O = Other (may include rented rooms, garages and car spaces),
+          U = Unknown. Source: NSW Fair Trading file legend.
+          A small number of rows carry codes outside this list and are
+          not yet flagged.
         tests:
           - not_null
 
