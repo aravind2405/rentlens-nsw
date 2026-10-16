@@ -90,7 +90,7 @@
   /* ── KPI strip ── */
   .kpi-strip {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     border: 1px solid var(--border);
     border-radius: var(--radius);
     background: var(--surface);
@@ -326,7 +326,7 @@
     </div>
     <div class="header-meta">
       <div class="brand">RentLens</div>
-      <div class="date">October 2026</div>
+      <div class="date">Data as at Sep 2026</div>
     </div>
   </div>
 </header>
@@ -352,16 +352,7 @@
       </svg>
       <span id="kpiHouseChange">+2.9% vs Sep 2025</span>
     </div>
-  </div>
-  <div class="kpi">
-    <div class="kpi-label" id="kpiBondsLabel">Bonds lodged (Sep 2026)</div>
-    <div class="kpi-value" id="kpiBondsVal">26,461</div>
-    <div class="kpi-sub" id="kpiBondsSub">Total 12 months: 310,931</div>
-  </div>
-  <div class="kpi highlight">
-    <div class="kpi-label">Priciest flat suburb</div>
-    <div class="kpi-value" id="kpiSuburb">Sydney CBD</div>
-    <div class="kpi-sub" id="kpiSuburbSub">2000 · $920 / week median</div>
+    <div class="kpi-sub">NSW-wide · houses include regional NSW, so they can look cheaper than flats</div>
   </div>
 </div>
 
@@ -376,10 +367,9 @@
     </div>
     <div class="pill-row">
       <div id="typeFilters" style="display:flex;gap:6px;flex-wrap:wrap;">
-        <button class="pill active" data-type="all">All types</button>
+        <button class="pill active" data-type="all">Both</button>
         <button class="pill" data-type="F">Flat / Apartment</button>
         <button class="pill" data-type="H">House</button>
-        <button class="pill" data-type="U">Unit</button>
       </div>
       <div class="range-row" id="rangeFilters">
         <button class="range-btn active" data-range="1y">1Y</button>
@@ -393,7 +383,6 @@
     <div class="legend" id="rentLegend">
       <div class="legend-item"><div class="legend-swatch" style="background:#2563EB"></div>Flat / Apartment</div>
       <div class="legend-item"><div class="legend-swatch" style="background:#16A34A"></div>House</div>
-      <div class="legend-item"><div class="legend-swatch" style="background:#F59E0B"></div>Unit</div>
     </div>
   </div>
 
@@ -401,11 +390,11 @@
   <div class="card">
     <div class="card-header">
       <div class="card-title">Most expensive flat postcodes</div>
-      <div class="card-source" id="tableSource">Flats/Apartments · Oct 2025–Sep 2026 · min. 30 bonds</div>
+      <div class="card-source" id="tableSource">Flats · median over Jan 2022 – Sep 2026</div>
     </div>
     <div class="rank-table">
       <div class="rank-table-head">
-        <span>#</span><span>Suburb (postcode)</span><span>Med/wk</span>
+        <span>#</span><span>Postcode (area)</span><span>Med/wk</span>
       </div>
       <div id="rankBody"></div>
     </div>
@@ -416,8 +405,8 @@
 <div class="volume-section">
   <div class="card">
     <div class="card-header">
-      <div class="card-title">Monthly bond lodgements — total new rentals</div>
-      <div class="card-source">All dwelling types · NSW Fair Trading</div>
+      <div class="card-title">Monthly bond lodgements</div>
+      <div class="card-source">All dwelling types · includes re-lodgements · busiest month highlighted</div>
     </div>
     <div class="chart-wrap-sm">
       <canvas id="volumeChart"></canvas>
@@ -426,6 +415,7 @@
 </div>
 
 <footer>
+  <strong>About this data:</strong> Rents are from new leases only; long-term tenants usually pay less. Bonds are lodged a few weeks after a lease is signed. Dwelling type “Other” can include rooms, garages and car spaces.<br>
   Data source: NSW Fair Trading Rental Bond Board · Bond lodgement data · Jan 2022 – Sep 2026 · 1.8M+ records · RentLens NSW
 </footer>
 
@@ -455,15 +445,6 @@ const ALL_H = [
   630, 650, 640, 650, 650, 650, 650, 650, 650, 660, 660, 655,  // 2024
   675, 670, 670, 680, 680, 680, 680, 690, 690, 682, 700, 695,  // 2025
   700, 700, 700, 700, 700, 700, 700, 710, 710                   // 2026
-];
-
-// Unit median weekly rent (U)
-const ALL_U = [
-  400, 400, 427, 400, 440, 420, 450, 460, 470, 470, 480, 487,  // 2022
-  480, 500, 480, 500, 500, 520, 500, 555, 550, 525, 540, 520,  // 2023
-  550, 530, 570, 600, 560, 530, 520, 600, 570, 619, 560, 580,  // 2024
-  609, 620, 600, 530, 650, 575, 580, 619, 580, 550, 620, 640,  // 2025
-  600, 650, 629, 550, 600, 620, 650, 620, 550                   // 2026
 ];
 
 // Volume (monthly bond lodgements, all types)
@@ -528,15 +509,15 @@ const REAL_POSTCODE_ROWS = [
 ];
 const POSTCODES = {
   '1y': {
-    source: 'Flats/Apartments · Oct 2025–Sep 2026 median · all-time postcode ranking',
+    source: 'Flats · median over Jan 2022 – Sep 2026 (same for every time range)',
     rows: REAL_POSTCODE_ROWS,
   },
   '2y': {
-    source: 'Flats/Apartments · Oct 2024–Sep 2026 median · all-time postcode ranking',
+    source: 'Flats · median over Jan 2022 – Sep 2026 (same for every time range)',
     rows: REAL_POSTCODE_ROWS,
   },
   'all': {
-    source: 'Flats/Apartments · Jan 2022–Sep 2026 median · all-time postcode ranking',
+    source: 'Flats · median over Jan 2022 – Sep 2026 (same for every time range)',
     rows: REAL_POSTCODE_ROWS,
   },
 };
@@ -547,11 +528,6 @@ function updateKPIs(rangeKey) {
   document.getElementById('kpiFlatChange').textContent = d.flatChange;
   document.getElementById('kpiHouseRent').textContent = d.houseRent;
   document.getElementById('kpiHouseChange').textContent = d.houseChange;
-  document.getElementById('kpiBondsLabel').textContent = d.bondsLabel;
-  document.getElementById('kpiBondsVal').textContent = d.bondsVal;
-  document.getElementById('kpiBondsSub').textContent = d.bondsSub;
-  document.getElementById('kpiSuburb').textContent = d.suburb;
-  document.getElementById('kpiSuburbSub').textContent = d.suburbSub;
 }
 
 function updateTable(rangeKey) {
@@ -612,18 +588,6 @@ const rentChart = new Chart(rentCtx, {
         tension: 0.35,
         fill: false,
       },
-      {
-        label: 'Unit',
-        data: getSlice(ALL_U, '1y'),
-        borderColor: '#F59E0B',
-        backgroundColor: 'rgba(245,158,11,0.05)',
-        borderWidth: 2,
-        pointRadius: 3,
-        pointBackgroundColor: '#F59E0B',
-        pointHoverRadius: 5,
-        tension: 0.35,
-        fill: false,
-      },
     ],
   },
   options: {
@@ -667,7 +631,7 @@ const rentChart = new Chart(rentCtx, {
 });
 
 // ── Update chart for range + type ─────────────────────────────────────────
-const DATASET_MAP = { F: 0, H: 1, U: 2 };
+const DATASET_MAP = { F: 0, H: 1 };
 
 function applyRange(rangeKey) {
   currentRange = rangeKey;
@@ -675,7 +639,6 @@ function applyRange(rangeKey) {
   rentChart.data.labels = labels;
   rentChart.data.datasets[0].data = getSlice(ALL_F, rangeKey);
   rentChart.data.datasets[1].data = getSlice(ALL_H, rangeKey);
-  rentChart.data.datasets[2].data = getSlice(ALL_U, rangeKey);
 
   // Shrink dots on wide views
   const dotSize = labels.length > 24 ? 1.5 : 3;
