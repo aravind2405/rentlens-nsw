@@ -22,10 +22,10 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-dbt-duckdb-pandas-requests
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
       - name: Install dependencies
-        run: pip install dbt-duckdb pandas requests
+        run: pip install -r requirements.txt
 
       - name: Download raw data
         run: |
