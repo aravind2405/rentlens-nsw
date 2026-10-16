@@ -5,7 +5,8 @@ models:
     description: >
       One row per NSW rental bond lodgement. Sourced from NSW Fair Trading
       monthly Excel files, Jan 2022 – Sep 2026. All columns cast to their
-      correct types; no rows filtered.
+      correct types. Annual roll-up files are excluded because they repeat
+      the monthly files; no other rows are filtered.
 
       Incremental model watermarked on loaded_at (arrival time), not
       lodgement_date (event time). This ensures late-arriving records —
@@ -44,15 +45,15 @@ models:
       - name: weekly_rent
         description: >
           Weekly rent in AUD as recorded on the bond lodgement form.
-          NULL where source value was non-numeric. Outliers (< $50 or
-          > $5,000/wk) are flagged downstream in int_lodgements_flagged
-          but not removed here.
+          NULL where source value was non-numeric. Missing, zero and
+          under-$50 rents are flagged downstream in int_lodgements_flagged
+          but not removed here. There is no upper limit.
 
       - name: file_month
         description: >
           Month the source file covers, in YYYY-MM format (e.g. 2026-09).
-          Annual rollup files use YYYY-annual format and are excluded from
-          monthly trend analysis in the marts.
+          Only monthly files are loaded; annual roll-up files are excluded
+          in this model.
         tests:
           - not_null
 
