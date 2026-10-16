@@ -3,38 +3,97 @@ version: 2
 models:
   - name: rents_by_postcode
     description: >
-      Median and average weekly rent by postcode and dwelling type.
-      Excludes rows with rent_flag or postcode_flag set.
+      One row per postcode and dwelling type, covering the whole period
+      loaded into the pipeline (not broken down by month). Shows how many
+      bonds were lodged and what rent was typically paid. Excludes bonds
+      with a missing, zero or under-$50 weekly rent, and bonds with a
+      postcode outside the NSW range 2000-2999.
 
     columns:
       - name: postcode
+        description: NSW postcode of the rented property (2000-2999).
         tests:
           - not_null
+
       - name: dwelling_type
+        description: >
+          Type of home rented, as recorded by the agent or landlord.
+          F = Flat/unit, H = House, T = Terrace/townhouse/semi-detached,
+          O = Other (may include rooms, garages and car spaces),
+          U = Unknown. A small number of rows carry other codes that are
+          not yet flagged.
         tests:
           - not_null
+
       - name: lodgement_count
+        description: >
+          Number of bonds lodged for this postcode and dwelling type.
+          A bond is lodged each time a new lease starts, so this counts
+          new leases, not all rented homes.
         tests:
           - not_null
+
       - name: median_weekly_rent
+        description: >
+          Middle weekly rent in AUD: half of these bonds had a lower rent
+          and half a higher one. The main measure of typical rent.
         tests:
           - not_null
+
+      - name: avg_weekly_rent
+        description: >
+          Average (mean) weekly rent in AUD. Pulled up by a few very
+          expensive leases, so usually higher than the median.
+
+      - name: min_weekly_rent
+        description: Lowest weekly rent in AUD among these bonds (at least $50).
+
+      - name: max_weekly_rent
+        description: >
+          Highest weekly rent in AUD among these bonds. Can include
+          unusually high or mis-entered values; there is no upper limit.
 
   - name: rents_by_month
     description: >
-      Median and average weekly rent by month and dwelling type.
-      Excludes rows with rent_flag or postcode_flag set.
+      One row per month and dwelling type. Shows how many bonds were
+      lodged that month and what rent was typically paid. Excludes bonds
+      with a missing, zero or under-$50 weekly rent, and bonds with a
+      postcode outside the NSW range 2000-2999.
 
     columns:
       - name: file_month
+        description: >
+          Month the NSW Fair Trading source file covers, as YYYY-MM
+          (e.g. 2026-08). Bonds are lodged a few weeks after a lease is
+          signed, so this lags the signing date.
         tests:
           - not_null
+
       - name: dwelling_type
+        description: >
+          Type of home rented, as recorded by the agent or landlord.
+          F = Flat/unit, H = House, T = Terrace/townhouse/semi-detached,
+          O = Other (may include rooms, garages and car spaces),
+          U = Unknown. A small number of rows carry other codes that are
+          not yet flagged.
         tests:
           - not_null
+
       - name: lodgement_count
+        description: >
+          Number of bonds lodged that month for this dwelling type.
+          Counts new leases, not all rented homes.
         tests:
           - not_null
+
       - name: median_weekly_rent
+        description: >
+          Middle weekly rent in AUD for that month and dwelling type:
+          half of the bonds had a lower rent and half a higher one.
         tests:
           - not_null
+
+      - name: avg_weekly_rent
+        description: >
+          Average (mean) weekly rent in AUD. Pulled up by a few very
+          expensive leases, so usually higher than the median.
