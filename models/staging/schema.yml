@@ -4,7 +4,7 @@ models:
   - name: stg_bond_lodgements
     description: >
       One row per NSW rental bond lodgement. Sourced from NSW Fair Trading
-      monthly Excel files, Sep 2025 - Aug 2026. All columns cast to their
+      monthly Excel files, Jan 2022 – Sep 2026. All columns cast to their
       correct types; no rows filtered.
 
     columns:
