@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>RentLens NSW</title>
+<meta name="description" content="Median weekly rents in NSW from signed rental bond lodgements, by dwelling type and postcode. Source: NSW Fair Trading.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha384-bs/nf9FbdNouRbMiFcrcZfLXYPKiPaGVGplVbv7dLGECccEXDW+S3zjqSKR5ZEaD" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
   :root {
@@ -14,11 +16,12 @@
     --text: #111827;
     --text-secondary: #374151;
     --muted: #6B7280;
-    --muted-light: #9CA3AF;
+    --muted-light: #6B7280;
     --accent: #2563EB;
     --accent-light: #EFF6FF;
     --accent-mid: #BFDBFE;
     --green: #16A34A;
+    --green-text: #15803D;
     --green-light: #DCFCE7;
     --radius: 10px;
   }
@@ -131,7 +134,7 @@
     align-items: center;
     gap: 4px;
   }
-  .kpi-sub.up { color: var(--green); }
+  .kpi-sub.up { color: var(--green-text); }
   .kpi.highlight .kpi-sub { color: #3B82F6; margin-top: 4px; }
 
   /* ── Content grid ── */
@@ -331,6 +334,7 @@
   </div>
 </header>
 
+<main>
 <!-- KPI strip -->
 <div class="kpi-strip">
   <div class="kpi">
@@ -338,7 +342,7 @@
     <div class="kpi-value" id="kpiFlatRent">$750</div>
     <div class="kpi-sub up" id="kpiFlatSub">
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-        <path d="M5 8V2M2 5l3-3 3 3" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 8V2M2 5l3-3 3 3" stroke="#15803D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span id="kpiFlatChange">+4.9% vs Sep 2025</span>
     </div>
@@ -348,7 +352,7 @@
     <div class="kpi-value" id="kpiHouseRent">$710</div>
     <div class="kpi-sub up" id="kpiHouseSub">
       <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-        <path d="M5 8V2M2 5l3-3 3 3" stroke="#16A34A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M5 8V2M2 5l3-3 3 3" stroke="#15803D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span id="kpiHouseChange">+2.9% vs Sep 2025</span>
     </div>
@@ -413,6 +417,7 @@
     </div>
   </div>
 </div>
+</main>
 
 <footer>
   <strong>About this data:</strong> Rents are from new leases only; long-term tenants usually pay less. Bonds can be lodged up to about six weeks after a lease starts. Dwelling type “Other” can include rooms, garages and car spaces.<br>
@@ -543,10 +548,10 @@ function getSlice(arr, rangeKey) {
 // ── Shared chart defaults ─────────────────────────────────────────────────
 Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif";
 Chart.defaults.font.size = 11;
-Chart.defaults.color = '#9CA3AF';
+Chart.defaults.color = '#6B7280';
 
 const gridOpts = { color: '#F3F4F6', drawBorder: false };
-const tickOpts = { color: '#9CA3AF', maxRotation: 0 };
+const tickOpts = { color: '#6B7280', maxRotation: 0 };
 
 // ── Rent trend chart ──────────────────────────────────────────────────────
 const rentCtx = document.getElementById('rentChart').getContext('2d');
