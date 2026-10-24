@@ -20,3 +20,16 @@ How the hash was produced and checked:
 
 Upgrading Chart.js means recomputing the hash. Vendoring the file into `docs/` would remove
 the CDN dependency entirely.
+
+## 2026-10-24: correct the data licence to CC BY
+
+The README said the bond data is under the "NSW Government open data licence", which has no
+source. The Data.NSW record for Rental Bond Lodgement (publisher: Fair Trading) states
+"Creative Commons Attribution" (https://data.nsw.gov.au/data/dataset/rental-bond-lodgement).
+The nsw.gov.au download page states no licence, and the NSW website default is CC BY 4.0
+(https://www.nsw.gov.au/nsw-government/about-website/copyright). The dataset record gives no
+version, so the docs say "CC BY" without one.
+
+CC BY needs attribution, a licence link and a note of changes. The README, `docs/project-brief.md`
+and the dashboard footer now credit NSW Fair Trading and the State of NSW, name CC BY, and
+say the medians are an aggregation made here, not official statistics.

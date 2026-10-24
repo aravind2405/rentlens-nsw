@@ -128,7 +128,7 @@ open docs/index.html
 NSW Fair Trading — Rental Bond Board  
 [rental-bond-lodgements](https://www.nsw.gov.au/housing-and-construction/renting-a-place-to-live/rental-bonds-online/rental-bond-data)
 
-Bond data is public under the [NSW Government open data licence](https://www.nsw.gov.au/nsw-government/policies-and-initiatives/data/open-data/open-data-licence). Each row is one bond lodgement: postcode, dwelling type, bedrooms, weekly rent, and lodgement date.
+Bond data is published by NSW Fair Trading under the [Creative Commons Attribution (CC BY)](https://data.nsw.gov.au/data/dataset/rental-bond-lodgement) licence, as stated on its Data.NSW record. © State of New South Wales. Medians and charts in this project are my own aggregation of the data, not official NSW Government statistics. Each row is one bond lodgement: postcode, dwelling type, bedrooms, weekly rent, and lodgement date.
 
 **Coverage:** Jan 2022 – Sep 2026, monthly files only. Annual roll-up files are skipped because they repeat the monthly data.
 **Records:** 1,547,476 bond lodgements (monthly files; quality flags applied downstream)
