@@ -33,3 +33,41 @@ version, so the docs say "CC BY" without one.
 CC BY needs attribution, a licence link and a note of changes. The README, `docs/project-brief.md`
 and the dashboard footer now credit NSW Fair Trading and the State of NSW, name CC BY, and
 say the medians are an aggregation made here, not official statistics.
+
+## 2026-10-24: dashboard accessibility, landmark, description and favicon
+
+Baseline on the live dashboard (Lighthouse 13.5.0 and axe-core 4.14.0, 2026-10-24 11:19 to 11:20 AEDT,
+measured with the scripts in `scripts/measure/` of the `ad-site` repo): accessibility 87, best practices 96,
+SEO 90; axe reported 3 violations (`color-contrast` on 12 elements, `landmark-one-main`, `region` on 12 elements).
+
+Changes in `docs/index.html`:
+
+- `--muted-light` was only used for text and measured 2.53:1 on white; it is now `#6B7280` (4.83:1).
+- Green change figures used `#16A34A` (3.29:1); text now uses a new `--green-text: #15803D` (5.02:1). The chart
+  line, legend swatch and green token keep `#16A34A`, since graphics need 3:1.
+- Chart axis labels use the same `#6B7280` grey.
+- Content between `<header>` and `<footer>` is wrapped in `<main>`.
+- Added a meta description and a favicon (`docs/favicon.svg`, matching the header logo mark). The only console
+  error was the missing favicon.
+
+Result, measured on local copies of `docs/` served over HTTP (like for like, before and after), 3 Lighthouse
+runs each, median:
+
+| | Accessibility | Best practices | SEO | Performance (mobile / desktop) | axe violations |
+|---|---|---|---|---|---|
+| Before | 87 | 96 | 90 | 98 / 100 | 3 |
+| After | 100 | 100 | 100 | 98 / 100 | 0 |
+
+Commands (from a directory with the scripts and pinned tools installed):
+
+```bash
+BASE=http://127.0.0.1:3601 PAGES="/" TAG=after node run-axe.mjs
+BASE=http://127.0.0.1:3601 PAGES="/" TAG=after- bash run-lighthouse.sh
+BASE=http://127.0.0.1:3602 PAGES="/" TAG=beforelocal- bash run-lighthouse.sh   # unchanged docs/index.html from main
+python3 summarize-lighthouse.py
+```
+
+Full-page screenshots before and after have identical dimensions (750x3190 on a 375 px phone viewport,
+1440x988 on desktop), so the layout did not move; about 1 to 2 percent of pixels changed, all in text and
+axis labels. Local performance is not comparable with the live CDN numbers, so the live dashboard should be
+re-measured after merging.
