@@ -17,7 +17,7 @@ numbers are correct.
 - URL: nsw.gov.au → Housing → Rental bond data
 - Format: Monthly .xlsx files, one per month from 2022 onwards
 - Update frequency: Monthly, ~30 days after month end
-- Licence: CC BY — must attribute NSW Fair Trading in README
+- Licence: Creative Commons Attribution (CC BY), per the Data.NSW record. Attribution: NSW Fair Trading, © State of New South Wales; state that medians are my own aggregation. Credited in the README, on the dashboard and on the /rentlens page.
 - Key fields: postcode, dwelling type, bedrooms, weekly rent, 
   lodgement date
 - Known limitation: covers new tenancies only — shows rent agreed 
