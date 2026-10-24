@@ -71,3 +71,19 @@ Full-page screenshots before and after have identical dimensions (750x3190 on a 
 1440x988 on desktop), so the layout did not move; about 1 to 2 percent of pixels changed, all in text and
 axis labels. Local performance is not comparable with the live CDN numbers, so the live dashboard should be
 re-measured after merging.
+
+## 2026-10-24: CI maintenance (action versions and runner)
+
+A CI run on `main` carried two annotations. A warning said `actions/checkout@v4`, `actions/cache@v4` and
+`actions/setup-python@v5` target Node.js 20, which GitHub is retiring and was already forcing onto Node 24.
+A notice said the `ubuntu-latest` label moves to Ubuntu 26 from 19 October 2026.
+
+Changes to `.github/workflows/dbt.yml`:
+
+- `actions/checkout` v4 to v7, `actions/setup-python` v5 to v7, `actions/cache` v4 to v6 (the latest releases
+  at the time; inputs unchanged).
+- `runs-on: ubuntu-latest` to `ubuntu-24.04`, so the operating system only changes when it is changed here.
+  Moving to Ubuntu 26 later should be a deliberate change that CI proves.
+
+Added `.github/dependabot.yml` so GitHub Actions versions are proposed weekly instead of piling up.
+Python dependencies are pinned in `requirements.txt` on purpose and are not covered by it.
